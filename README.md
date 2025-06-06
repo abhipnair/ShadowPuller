@@ -1,6 +1,7 @@
-# 🔥 ShadowPuller - Stealth Command & Control Framework
-“In the shadows we pull. In silence we vanish.”
+# 🔥 ShadowPuller - Stealth Command & Control Framework: In the shadows we pull. In silence we vanish.
+![main cli](images/logo.png)
 
+--- 
 ## 🌑 Introduction
 
 ShadowPuller is an advanced, stealthy Command & Control (C2) framework designed for covert operations on Windows and Linux. It uses obfucated(encoded) clipboard-based communication via a pastebin service to avoid direct network traces.
