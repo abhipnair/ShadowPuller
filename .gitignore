@@ -1,0 +1,33 @@
+# Specific subfolder cache
+bot/__pycache__/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# PyInstaller
+*.spec
+
+# Logs and local output
+*.log
+command_outputs.txt
+*.out
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VSCode and JetBrains IDEs
+.vscode/
+.idea/
+
+# Git metadata
+*.swp
+*.swo
