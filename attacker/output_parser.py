@@ -8,14 +8,14 @@ def process_file(input_file):
     for line_num, line in enumerate(lines, 1):
         
         if ':' in line:
-            # Split at last occurrence of ':' (after timestamp)
+
             parts = line.rsplit(':', 1)
             if len(parts) == 2:
                 prefix, encoded_part = parts
                 encoded_clean = encoded_part.split('\n')[0].strip().strip('"').strip("'")
                 
                 try:
-                    # Add padding if needed
+
                     padding_needed = len(encoded_clean) % 4
                     if padding_needed:
                         encoded_clean += '=' * (4 - padding_needed)

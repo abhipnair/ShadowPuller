@@ -6,7 +6,7 @@ import platform
 
 
 def run_stealth_command_linux(command: str) -> str:
-    
+
     LIBC = ctypes.CDLL(None)
     EXECVE = LIBC.execve
     FORK = LIBC.fork
@@ -62,13 +62,14 @@ def run_stealth_command_linux(command: str) -> str:
 
 
 def run_command_ctypes(command: str) -> str:
-    # Windows constants
+
+
     CREATE_NO_WINDOW = 0x08000000
     STARTF_USESTDHANDLES = 0x00000100
     STARTF_USESHOWWINDOW = 0x00000001
     SW_HIDE = 0
 
-    # Handle Inheritance off
+
     SECURITY_ATTRIBUTES = ctypes.Structure
     class SECURITY_ATTRIBUTES(ctypes.Structure):
         _fields_ = [
@@ -82,13 +83,12 @@ def run_command_ctypes(command: str) -> str:
     sa.lpSecurityDescriptor = None
     sa.bInheritHandle = True
 
-    # Create pipes for STDOUT and STDERR
+
     read_stdout = wintypes.HANDLE()
     write_stdout = wintypes.HANDLE()
     ctypes.windll.kernel32.CreatePipe(ctypes.byref(read_stdout), ctypes.byref(write_stdout), ctypes.byref(sa), 0)
     ctypes.windll.kernel32.SetHandleInformation(read_stdout, 1, 0)
 
-    # STARTUPINFO structure
     class STARTUPINFO(ctypes.Structure):
         _fields_ = [
             ('cb', wintypes.DWORD),
@@ -148,7 +148,7 @@ def run_command_ctypes(command: str) -> str:
         pass
         return "Failed to spawn process"
 
-    # Read output
+
     output = b""
     buffer = ctypes.create_string_buffer(4096)
     bytes_read = wintypes.DWORD(0)
@@ -159,7 +159,7 @@ def run_command_ctypes(command: str) -> str:
             break
         output += buffer.raw[:bytes_read.value]
 
-    # Cleanup
+
     ctypes.windll.kernel32.CloseHandle(read_stdout)
     ctypes.windll.kernel32.CloseHandle(pi.hProcess)
     ctypes.windll.kernel32.CloseHandle(pi.hThread)
