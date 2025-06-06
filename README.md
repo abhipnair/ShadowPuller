@@ -1,4 +1,4 @@
-# 🔥 ShadowPuller - Stealth Command & Control Framework: In the shadows we pull. In silence we vanish.
+# 🔥 ShadowPuller - Stealth Command & Control Framework
 ![main cli](images/logo.png)
 
 --- 
