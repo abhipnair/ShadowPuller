@@ -3,27 +3,23 @@ import os
 import ctypes.wintypes as wintypes
 import platform
 
-# Constants
-LIBC = ctypes.CDLL(None)
-EXECVE = LIBC.execve
-FORK = LIBC.fork
-WAITPID = LIBC.waitpid
-PIPE = LIBC.pipe
-DUP2 = LIBC.dup2
-READ = LIBC.read
-CLOSE = LIBC.close
+
 
 def run_stealth_command_linux(command: str) -> str:
-    """
-    Stealthily runs a command using low-level fork and execve via ctypes.
-    Captures output using pipes.
-    """
+    
+    LIBC = ctypes.CDLL(None)
+    EXECVE = LIBC.execve
+    FORK = LIBC.fork
+    WAITPID = LIBC.waitpid
+    PIPE = LIBC.pipe
+    DUP2 = LIBC.dup2
+    READ = LIBC.read
+    CLOSE = LIBC.close
 
     rpipe = ctypes.c_int()
     wpipe = ctypes.c_int()
     pipefd = (ctypes.c_int * 2)()
     if PIPE(pipefd) != 0:
-        pass
         return "Pipe creation failed"
 
     rpipe, wpipe = pipefd[0], pipefd[1]
@@ -36,7 +32,6 @@ def run_stealth_command_linux(command: str) -> str:
         DUP2(pipefd[1], 2)  # stderr
         CLOSE(pipefd[1])
 
-        # Prepare command: ['/bin/sh', '-c', 'yourcommand']
         cmd = b"/bin/sh"
         args = (ctypes.c_char_p * 4)()
         args[0] = ctypes.c_char_p(cmd)
@@ -49,9 +44,7 @@ def run_stealth_command_linux(command: str) -> str:
 
         EXECVE(ctypes.c_char_p(cmd), args, env)
         os._exit(1)
-
     else:
-        # Parent
         CLOSE(pipefd[1])
         buffer = b""
         buf = ctypes.create_string_buffer(4096)
@@ -62,8 +55,8 @@ def run_stealth_command_linux(command: str) -> str:
             buffer += buf.raw[:bytes_read]
         CLOSE(pipefd[0])
         WAITPID(pid, None, 0)
-        print("Cmd out: ", buffer.decode(errors="ignore"))
         return buffer.decode(errors="ignore")
+
     
 
 

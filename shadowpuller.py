@@ -22,8 +22,10 @@ def banner():
 \__ \| ' \ / _` |/ _` |/ _ \\ V  V /|  _/| || || | | |/ -_) | '_| 
 |___/|_||_|\__,_|\__,_|\___/ \_/\_/ |_|   \_,_||_| |_|\___| |_|""" +
         DIM +
-        "\n\n                       Pulling strings from the shadows...\n" +
+        "\n\n                     Pulling strings from the shadows.\n"
+        "\t\t\t\t\tgithub.com/abhipnair\n" +
         RESET
+                                    
     )
 
     print(banner)
@@ -69,13 +71,15 @@ def menu() -> int:
     print("-" * 55)
     print("[1] 📤 Upload & Deploy Payload")
     print("[2] 📥 Retrieve Field Intel (Command Output)")
-    print("[3] 💣 Initiate Self-Destruct Protocol")
-    print("[4] 🚪 Disengage & Exit Operation")
+    print("[3] 🕵️‍♂️ Analyze Captured Intel")
+    print("[4] 💣 Initiate Self-Destruct Protocol")
+    print("[5] 🚪 Disengage & Exit Operation")
+
     print("-" * 55)
 
     try:
         user_input = int(input("💻 Your Directive [1-4]: "))
-        if user_input in range(1, 5):
+        if user_input in range(1, 6):
             return user_input
         else:
             print("⚠ Invalid choice. Stay hidden. Try again.\n")
@@ -109,8 +113,20 @@ def main():
                     print(f"[{timestamp}] 📄 Output secured → saved as 'command_outputs.txt'")
                 else:
                     print(f"[{timestamp}] ⚠ No trace recovered. Output fetch unsuccessful.")
-            
+
             elif choice == 3:
+                with open("command_outputs.txt", "r") as file:
+                    lines = file.readlines()
+
+                print()
+                print("-" * 55)
+                print(" 📄 Intel Report")
+                print("-" * 55)
+
+                for line in lines:
+                    print(line, end="")
+            
+            elif choice == 4:
                 print(f"[{timestamp}] 💣 Triggering silent self-destruct protocol...")
 
                 if attacker.push_to_klipit("break"):
@@ -120,7 +136,7 @@ def main():
                 else:
                     print(f"[{timestamp}] ❌ Abort failed. 'break' signal lost in transit.")
             
-            elif choice == 4:
+            elif choice == 5:
                 print(f"[{timestamp}] 📴 Finalizing session & disengaging from command grid...")
                 attacker.push_to_klipit("break")
                 time.sleep(4)
