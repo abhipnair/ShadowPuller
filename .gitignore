@@ -1,3 +1,8 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Specific subfolder cache
 bot/__pycache__/
 
@@ -17,7 +22,7 @@ ENV/
 
 # Logs and local output
 *.log
-command_outputs.txt
+command_output.txt
 *.out
 
 # OS files
