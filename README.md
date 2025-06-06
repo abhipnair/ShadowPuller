@@ -75,20 +75,20 @@ ShadowPuller is an advanced, stealthy Command & Control (C2) framework designed 
 
 ---
 
-🔐 Security & Stealth Features
-Clipboard Communication
+## 🔐 Security & Stealth Features
+### Clipboard Communication
 
     Commands and results are Base64 encoded
 
     Clipboard data pushed/pulled via private pastebin klipit.in for stealth
 
-Stealth Execution
+### Stealth Execution
 
     Windows: ctypes-based in-memory command execution (no visible processes)
 
     Linux: syscall level execve/fork/pipe for stealth execution
 
-Sandbox & Debugger Evasion
+### Sandbox & Debugger Evasion
 
     Detects VM environments: VMWare, VirtualBox, QEMU
 
@@ -98,7 +98,7 @@ Sandbox & Debugger Evasion
 
     Time-based execution to avoid sandbox auto-run
 
-Self-Destruct & Anti-Forensics
+### Self-Destruct & Anti-Forensics
 
     Multi-pass secure file wiping
 
